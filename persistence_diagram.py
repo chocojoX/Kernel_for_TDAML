@@ -53,7 +53,7 @@ class Persistence_diagram(object):
 
 
     def create_close_diagram(self, n_points=10, distance=1, high=None):
-        """ Returns a daigram with at n_points points that is at a distance of exactly distance of the given persistence diagram """
+        """ Returns a daigram with at least n_points points that is at a Wasserstein (infinite) distance of exactly distance of the given persistence diagram """
 
         if high is None:
             high = self.high
@@ -99,3 +99,29 @@ class Persistence_diagram(object):
             new_diagram.add_point([x, y])
 
         return new_diagram
+
+
+    def get_symmetricized_diagram(self):
+        symmetric_diagram = persistence_diagram()
+        for p in self.points:
+            symmetric_diagram.add_point(p)
+            symmetric_diagram.add_point([-p[0], -p[1]])
+
+        return symmetric_diagram
+
+
+    def kernel_value(self, diag2, sigma):
+        val = 0
+        for p1 in self.points:
+            for p2 in diag2.points:
+                x, y = p1
+                x2, y2 = p2
+                val += 1/(8*np.pi*sigma) * ( np.exp(-((x-x2)**2 + (y-y2)**2)/(8*sigma)) -
+                                             np.exp(-((x-y2)**2 + (y-x2)**2)/(8*sigma)) )
+        return val
+
+
+
+    def compute_W1(self, diag2):
+        # TODO
+        pass
